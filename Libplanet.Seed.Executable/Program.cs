@@ -70,6 +70,8 @@ namespace Libplanet.Seed.Executable
             try
             {
                 var privateKey = options.PrivateKey ?? new PrivateKey();
+                var gossipPrivateKey = options.GossipPrivateKey ?? new BlsPrivateKey();
+                
                 var seed = new Net.Seed(
                     privateKey,
                     options.Host,
@@ -83,6 +85,20 @@ namespace Libplanet.Seed.Executable
                     pingTimeout: TimeSpan.FromSeconds(options.PingTimeout));
                 Startup.Seed = seed;
 
+                var gossip = new Net.Seed(
+                    gossipPrivateKey,
+                    options.Host,
+                    options.GossipPort,
+                    options.Workers,
+                    options.IceServer is null ? new IceServer[] { } : new[] { options.IceServer },
+                    AppProtocolVersion.FromToken(options.AppProtocolVersionToken),
+                    maximumPeersToToRefresh: options.MaximumGossipPeersToRefresh,
+                    refreshInterval: TimeSpan.FromSeconds(options.RefreshInterval),
+                    peerLifetime: TimeSpan.FromSeconds(options.PeerLifetime),
+                    pingTimeout: TimeSpan.FromSeconds(options.PingTimeout));
+                Startup.Gossip = gossip;
+                
+                
                 IWebHost webHost = WebHost.CreateDefaultBuilder()
                     .UseStartup<SeedStartup<Startup>>()
                     .UseSerilog()
@@ -101,11 +117,13 @@ namespace Libplanet.Seed.Executable
                     {
                         await Task.WhenAll(
                             webHost.RunAsync(cts.Token),
-                            seed.StartAsync(new HashSet<BoundPeer>(options.Peers), cts.Token));
+                            seed.StartAsync(new HashSet<BoundPeer>(options.Peers), cts.Token),
+                            gossip.StartAsync(new HashSet<BoundPeer>(options.GossipPeers), cts.Token));
                     }
                     catch (OperationCanceledException)
                     {
                         await seed.StopAsync(TimeSpan.FromSeconds(1));
+                        await gossip.StopAsync(TimeSpan.FromSeconds(1));
                     }
                 }
             }
@@ -122,8 +140,11 @@ namespace Libplanet.Seed.Executable
         private class Startup : IContext
         {
             public ConcurrentDictionary<Address, PeerInfo>? Peers => Seed?.PeerInfos;
+            public ConcurrentDictionary<Address, PeerInfo>? GossipPeers => Seed?.PeerInfos;
 
             internal static Net.Seed? Seed { get; set; }
+            
+            internal static Net.Seed? Gossip { get; set; }
         }
     }
 }

@@ -37,6 +37,14 @@ namespace Libplanet.Seed.Executable
         public int? Port { get; set; }
 
         [Option(
+            'g',
+            "gossip-port",
+            Required = false,
+            Default = null,
+            HelpText = "The port number to listen for gossip.")]
+        public int? GossipPort { get; set; }
+        
+        [Option(
             'w',
             "workers",
             Required = false,
@@ -96,6 +104,35 @@ namespace Libplanet.Seed.Executable
         }
 
         public PrivateKey? PrivateKey { get; set; }
+        
+        [Option(
+            'K',
+            "gossip-private-key",
+            Required = true,
+            HelpText = "Private key used for node identifying and message signing.")]
+        public string GossipPrivateKeyString
+        {
+            set
+            {
+                GossipPrivateKey = null;
+                if (!string.IsNullOrEmpty(value))
+                {
+                    try
+                    {
+                        GossipPrivateKey = new BlsPrivateKey(ByteUtil.ParseHex(value));
+                    }
+                    catch (Exception e)
+                    {
+                        Console.Error.WriteLine(
+                            "Error occurred during setting private key: {0};\n{1}",
+                            value,
+                            e);
+                    }
+                }
+            }
+        }
+
+        public BlsPrivateKey? GossipPrivateKey { get; set; }
 
         [Option(
             'I',
@@ -147,7 +184,7 @@ namespace Libplanet.Seed.Executable
                     }
 
                     byte[] publicKeyBytes = ByteUtil.ParseHex(parts[0]);
-                    var publicKey = new PublicKey(publicKeyBytes);
+                    var publicKey = PublicKeyGetter.Get(publicKeyBytes);
                     var endpoint = new DnsEndPoint(parts[1], int.Parse(parts[2]));
                     return new BoundPeer(publicKey, endpoint);
                 });
@@ -155,6 +192,41 @@ namespace Libplanet.Seed.Executable
         }
 
         public IEnumerable<BoundPeer> Peers { get; private set; } = new BoundPeer[] { };
+        
+        [Option(
+            longName: "peers",
+            Required = false,
+            Default = new string[] { },
+            HelpText = "A list of peers that must exist in the peer table. " +
+                       "The format of each peer is a comma-separated triple of a peer's " +
+                       "hexadecimal public key, host, and port number.")]
+        public IEnumerable<string> GossipPeerStrings
+        {
+            get
+            {
+                return GossipPeers.Select(peer => peer.ToString());
+            }
+
+            set
+            {
+                Peers = value.Select(str =>
+                {
+                    string[] parts = str.Split(',');
+                    if (parts.Length != 3)
+                    {
+                        throw new FormatException(
+                            $"A peer must be a command-separated triple. {str}");
+                    }
+
+                    byte[] publicKeyBytes = ByteUtil.ParseHex(parts[0]);
+                    var publicKey = PublicKeyGetter.Get(publicKeyBytes);
+                    var endpoint = new DnsEndPoint(parts[1], int.Parse(parts[2]));
+                    return new BoundPeer(publicKey, endpoint);
+                });
+            }
+        }
+        
+        public IEnumerable<BoundPeer> GossipPeers { get; private set; } = new BoundPeer[] { };
 
         [Option(
             longName: "maximum-peers-to-refresh",
@@ -164,6 +236,14 @@ namespace Libplanet.Seed.Executable
                        "in periodic peer table refreshing task.")]
         public int MaximumPeersToRefresh { get; set; }
 
+        [Option(
+            longName: "maximum-peers-to-refresh",
+            Required = false,
+            Default = int.MaxValue,
+            HelpText = "Maximum number of peers to be refreshed at once " +
+                       "in periodic peer table refreshing task.")]
+        public int MaximumGossipPeersToRefresh { get; set; }
+        
         [Option(
             longName: "refresh-interval",
             Required = false,
