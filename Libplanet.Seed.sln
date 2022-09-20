@@ -4,6 +4,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Seed", "Libplanet
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Seed.Executable", "Libplanet.Seed.Executable\Libplanet.Seed.Executable.csproj", "{2228DFC7-7024-4389-8476-EA9E2B667C07}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Net", "Libplanet.Net\Libplanet.Net.csproj", "{9FF36CFD-62C3-4290-804A-A001468F9885}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet", "Libplanet\Libplanet.csproj", "{E39F23F0-AAD9-4DD2-BC61-26A712165243}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libplanet.Stun", "Libplanet.Stun\Libplanet.Stun.csproj", "{A6560A70-CB91-4123-A0AA-C98AAF8ED506}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +24,17 @@ Global
 		{2228DFC7-7024-4389-8476-EA9E2B667C07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2228DFC7-7024-4389-8476-EA9E2B667C07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2228DFC7-7024-4389-8476-EA9E2B667C07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FF36CFD-62C3-4290-804A-A001468F9885}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FF36CFD-62C3-4290-804A-A001468F9885}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FF36CFD-62C3-4290-804A-A001468F9885}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FF36CFD-62C3-4290-804A-A001468F9885}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E39F23F0-AAD9-4DD2-BC61-26A712165243}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E39F23F0-AAD9-4DD2-BC61-26A712165243}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E39F23F0-AAD9-4DD2-BC61-26A712165243}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E39F23F0-AAD9-4DD2-BC61-26A712165243}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6560A70-CB91-4123-A0AA-C98AAF8ED506}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6560A70-CB91-4123-A0AA-C98AAF8ED506}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6560A70-CB91-4123-A0AA-C98AAF8ED506}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6560A70-CB91-4123-A0AA-C98AAF8ED506}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
